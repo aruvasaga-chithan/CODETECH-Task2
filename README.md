@@ -1,4 +1,4 @@
-# CODETECH-Task2
+# CODTECH-Task2
 # Vulnerability Scanner
 
 **Name:** **ARUVASAGA CHITHAN.A**  
@@ -24,4 +24,4 @@ This Python-based Vulnerability Scanner allows users to scan open ports and chec
 ## How to Run:
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/aruvasaga-chithan/CODETECH-Task2.git
+   git clone https://github.com/aruvasaga-chithan/CODTECH-Task2.git
