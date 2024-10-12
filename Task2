@@ -1,0 +1,124 @@
+#A GUI based vulnerability Scanner using Python
+#@auther:A.ARUVASAGA CHITHAN
+
+import socket
+import platform
+import subprocess
+import tkinter as tk
+from tkinter import messagebox, scrolledtext
+from threading import Thread
+from concurrent.futures import ThreadPoolExecutor
+import queue
+
+class VulnerabilityScanner:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Vulnerability Scanner")
+        self.root.geometry("600x500")
+        self.root.configure(bg="#2d2d2d")  # Background color
+
+        # Queue for thread-safe results
+        self.result_queue = queue.Queue()
+
+        self.build_gui()
+
+    def build_gui(self):
+        # Title label
+        title_label = tk.Label(self.root, text="Vulnerability Scanner", font=("Arial", 16, "bold"), bg="#2d2d2d", fg="#00ff00")
+        title_label.pack(pady=10)
+
+        # Target entry
+        target_label = tk.Label(self.root, text="Enter target (IP address or domain):", font=("Arial", 12), bg="#2d2d2d", fg="#f0f0f0")
+        target_label.pack(pady=5)
+        self.target_entry = tk.Entry(self.root, width=50, font=("Arial", 12), bg="#3e3e3e", fg="#ffffff", insertbackground='white')
+        self.target_entry.pack(pady=5)
+
+        # Scan button
+        scan_button = tk.Button(self.root, text="Start Scan", font=("Arial", 12), command=self.start_scan, bg="#007bff", fg="white", activebackground="#0056b3", width=15, relief="groove")
+        scan_button.pack(pady=10)
+
+        # Results display
+        results_label = tk.Label(self.root, text="Scan Results:", font=("Arial", 12), bg="#2d2d2d", fg="#f0f0f0")
+        results_label.pack(pady=5)
+        self.results_display = scrolledtext.ScrolledText(self.root, width=70, height=20, font=("Arial", 10), bg="#1e1e1e", fg="#00ff00", insertbackground="white", relief="flat")
+        self.results_display.pack(pady=10)
+
+        # Start result updater thread
+        self.update_results()
+
+    def update_results(self):
+        while not self.result_queue.empty():
+            message = self.result_queue.get()
+            self.results_display.insert(tk.END, message + "\n")
+            self.results_display.see(tk.END)
+        self.root.after(100, self.update_results)
+
+    def get_target_ip(self, target):
+        try:
+            ip_address = socket.gethostbyname(target)
+            return ip_address
+        except socket.error:
+            messagebox.showerror("Error", f"Unable to resolve {target}. Please check the domain name.")
+            return None
+
+    def scan_port(self, ip_address, port):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        socket.setdefaulttimeout(0.2)  # Reduced timeout for faster scans
+        result = sock.connect_ex((ip_address, port))
+        if result == 0:
+            self.result_queue.put(f"Port {port}: Open")
+        sock.close()
+
+    def scan_ports(self, ip_address, start_port=1, end_port=1024):
+        self.result_queue.put(f"Scanning {ip_address} for open ports...\n")
+        with ThreadPoolExecutor(max_workers=100) as executor:
+            for port in range(start_port, end_port + 1):
+                executor.submit(self.scan_port, ip_address, port)
+
+        self.result_queue.put("Port scan completed.")
+        self.check_common_vulnerabilities()  # Start vulnerability scan after port scan completes
+
+    def check_common_vulnerabilities(self):
+        self.result_queue.put("\nChecking for common security misconfigurations...")
+        
+        if platform.system().lower() == "linux":
+            Thread(target=self.check_ufw_status).start()
+        elif platform.system().lower() == "windows":
+            Thread(target=self.check_windows_firewall_status).start()
+
+    def check_ufw_status(self):
+        try:
+            self.result_queue.put("Checking UFW firewall status on Linux...")
+            output = subprocess.check_output(['sudo', 'ufw', 'status'], timeout=5).decode('utf-8')
+            self.result_queue.put(f"UFW Status:\n{output}")
+        except subprocess.CalledProcessError:
+            self.result_queue.put("Failed to check UFW firewall status.")
+        except subprocess.TimeoutExpired:
+            self.result_queue.put("UFW firewall check timed out.")
+
+    def check_windows_firewall_status(self):
+        try:
+            self.result_queue.put("Checking Windows Firewall status...")
+            output = subprocess.check_output(['netsh', 'advfirewall', 'show', 'allprofiles'], timeout=5).decode('utf-8')
+            self.result_queue.put(f"Windows Firewall Status:\n{output}")
+        except subprocess.CalledProcessError:
+            self.result_queue.put("Failed to check Windows Firewall status.")
+        except subprocess.TimeoutExpired:
+            self.result_queue.put("Windows Firewall check timed out.")
+
+    def start_scan(self):
+        target = self.target_entry.get()
+        if not target:
+            messagebox.showerror("Input Error", "Please enter a target IP address or domain.")
+            return
+
+        ip_address = self.get_target_ip(target)
+        if ip_address:
+            Thread(target=self.scan_ports, args=(ip_address, 1, 1024)).start()
+
+# Main execution
+if __name__ == "__main__":
+    root = tk.Tk()
+    scanner = VulnerabilityScanner(root)
+    root.mainloop()
+
