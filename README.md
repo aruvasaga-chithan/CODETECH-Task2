@@ -24,4 +24,4 @@ This Python-based Vulnerability Scanner allows users to scan open ports and chec
 ## How to Run:
 1. Clone the repository:  
    ```bash
-  [ git clone https://github.com/AruvasagaChithan/codetechitsolution-task2.git](https://github.com/aruvasaga-chithan/CODETECH-Task2.git)
+  (https://github.com/aruvasaga-chithan/CODETECH-Task2.git)
