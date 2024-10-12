@@ -2,7 +2,7 @@
 # Vulnerability Scanner
 
 **Name:** **ARUVASAGA CHITHAN.A**  
-**Company:** **CODETECH IT SOLUTIONS**  
+**Company:** **CODTECH IT SOLUTIONS**  
 **ID:** **CT08DS8858**  
 **Domain:** **CYBER SECURITY & ETHICAL HACKING**  
 **Duration:** **OCTOBER TO NOVEMBER 2024**  
