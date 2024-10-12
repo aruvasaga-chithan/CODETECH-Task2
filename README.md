@@ -9,7 +9,7 @@
 **Mentor:** **MUZAMMIL**  
 
 ## Project Overview
-This Python-based Vulnerability Scanner allows users to scan open ports and check common security configurations. The tool supports both Windows and Linux systems, using GUI created with Tkinter.
+This Python-based Vulnerability Scanner allows users to scan open ports and check common security configurations. The tool supports both Windows and Linux systems, using a GUI created with Tkinter.
 
 ### Features:
 - **Port Scanning**: Checks open ports on the target system (range 1-1024).
@@ -24,4 +24,4 @@ This Python-based Vulnerability Scanner allows users to scan open ports and chec
 ## How to Run:
 1. Clone the repository:  
    ```bash
-  (https://github.com/aruvasaga-chithan/CODETECH-Task2.git)
+   git clone https://github.com/aruvasaga-chithan/CODETECH-Task2.git
